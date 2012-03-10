@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/repos/!svn/ver/5086/cygnus-transactionmanager/web-app/WEB-INF
+END
+applicationContext.xml
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repos/!svn/ver/5086/cygnus-transactionmanager/web-app/WEB-INF/applicationContext.xml
+END
+sitemesh.xml
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/repos/!svn/ver/5086/cygnus-transactionmanager/web-app/WEB-INF/sitemesh.xml
+END

@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/repos/!svn/ver/5086/cygnus-transactionmanager/scripts
+END
+_Install.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/repos/!svn/ver/5086/cygnus-transactionmanager/scripts/_Install.groovy
+END
+_Uninstall.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/repos/!svn/ver/5086/cygnus-transactionmanager/scripts/_Uninstall.groovy
+END
+_Upgrade.groovy
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/repos/!svn/ver/5086/cygnus-transactionmanager/scripts/_Upgrade.groovy
+END

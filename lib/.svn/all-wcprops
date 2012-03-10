@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/repos/!svn/ver/5086/cygnus-transactionmanager/lib
+END
+mysql-connector-java-5.0.8-bin.jar
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repos/!svn/ver/5086/cygnus-transactionmanager/lib/mysql-connector-java-5.0.8-bin.jar
+END
+ojdbc14.jar
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/repos/!svn/ver/5086/cygnus-transactionmanager/lib/ojdbc14.jar
+END
