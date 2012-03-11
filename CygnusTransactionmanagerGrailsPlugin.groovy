@@ -1,12 +1,12 @@
 import org.codehaus.groovy.grails.commons.ApplicationHolder
 import org.hibernate.SessionFactory
-import org.apache.commons.logging.LogFactory
-import org.apache.log4j.Logger;
 import com.cygnus.util.GroovyHelper;
 import com.cygnus.trm.util.*;
 
+import org.apache.commons.logging.LogFactory;
+
 class CygnusTransactionmanagerGrailsPlugin {
-	private static final log = LogFactory.getLog(this)
+	
 	// the plugin version
 	def version = "0.1"
 	// the version or versions of Grails the plugin is designed for
@@ -25,7 +25,7 @@ class CygnusTransactionmanagerGrailsPlugin {
 	def description = '''\
 Cygnus Transaction Manager Plugin.
 '''
-
+	def loadBefore = ['cygnusUsermanagement']
 	// URL to the plugin's documentation
 	def documentation = "http://grails.org/plugin/cygnus-transactionmanager"
 
@@ -59,6 +59,13 @@ Cygnus Transaction Manager Plugin.
 
 	def doWithDynamicMethods = { ctx ->
 		// TODO Implement registering dynamic methods to classes (optional)
+		for (classes in application.allClasses){
+			classes.metaClass.'static'.getLog = { ->
+				LogFactory.getLog(classes)
+			}
+		}
+	
+		
 		def transInit = new TransactionManagerInit()
 		transInit.doWithDynamicMethodInit(ctx)
 		

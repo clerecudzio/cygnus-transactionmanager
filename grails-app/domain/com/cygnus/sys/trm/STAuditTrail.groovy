@@ -8,9 +8,10 @@ class STAuditTrail {
 	String process
 	Date accessDtm
 	
-	STdAuditTrail tdAuditTrail
+	
 	
 	static constraints = {
+		process nullable:true
 	}
 	
 	
