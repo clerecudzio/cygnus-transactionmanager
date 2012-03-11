@@ -1,5 +1,10 @@
 package com.cygnus.sys.trm
 
+/**
+ * Audit Trail Detail
+ * @author haris
+ * Domain for storing column objects on AuditTrail
+ */
 class STdAuditTrail {
 	
 	

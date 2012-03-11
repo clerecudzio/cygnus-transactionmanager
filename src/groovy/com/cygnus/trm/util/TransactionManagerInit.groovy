@@ -73,12 +73,9 @@ class TransactionManagerInit {
 				try {
 					//before invoking original method, check and insert auditTrail
 					if(name in ['save','update']){
-						if(aService.checkAuditLoggingEnabled(delegate.class.name)){
 							delegate.log.info "inserting audit trail for ${tableName} \n"
-							aService.insertIntoAuditTrail(inputMap,tableName)
-						}else{
-//							delegate.log.info "audit trail disabled for ${delegate.class.name} --> ${tableName}"
-						}
+							aService.insertIntoAuditTrail(inputMap,tableName,delegate.class.name,'system-bootstrapping')
+						
 					}
 					
 					def result = metaMethod.invoke(delegate, args)

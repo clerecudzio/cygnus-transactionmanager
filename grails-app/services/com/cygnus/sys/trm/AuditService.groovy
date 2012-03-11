@@ -24,24 +24,25 @@ class AuditService {
 			log.error "error when run checkAuditLoggingEnabled ${ex.getMessage()}"
 		}
 		return domainConfig? domainConfig.auditEnabled : false
-	}	
+	}
 
-	def insertIntoAuditTrail(Map inputMap,String domainClassName){
+	def insertIntoAuditTrail(Map inputMap,domainClassName,fullClassName,processInfo){
 		try{
 			//if domain class logging is enabled
-			STAuditTrail.withTransaction{
-				def stAuditTrail = new STAuditTrail(domainClassName: domainClassName,accessDtm: new Date(),modifiedBy: "cygnus-system")
-				
-				inputMap.each{ value ->
-				
-					log.info "value = " + value.key +" , "+ value.value	
-				
-					stAuditTrail.addToTdAuditTrail(new STdAuditTrail(columnName: "${value.key}",columnValue: "${value.value}"))
-					
+			if(checkAuditLoggingEnabled(fullClassName)){
+				STAuditTrail.withTransaction{
+					def stAuditTrail = new STAuditTrail(domainClassName: domainClassName,accessDtm: new Date(),modifiedBy: "cygnus-system",process:processInfo)
+
+					inputMap.each{ value ->
+
+						log.info "value = " + value.key +" , "+ value.value
+
+						stAuditTrail.addToTdAuditTrail(new STdAuditTrail(columnName: "${value.key}",columnValue: "${value.value}"))
+
+					}
+					stAuditTrail.save(failOnError:true)
 				}
-				stAuditTrail.save(failOnError:true)
-			}	
-			
+			}
 		}catch(Exception ex){
 			log.error "error insert into AuditTrail ${ex.getMessage()}"
 			throw ex
