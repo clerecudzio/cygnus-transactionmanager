@@ -1,3 +1,5 @@
+import org.codehaus.groovy.grails.commons.GrailsApplication;
+import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
 import org.codehaus.groovy.grails.commons.ApplicationHolder
 import org.hibernate.SessionFactory
 import com.cygnus.util.GroovyHelper;
@@ -5,7 +7,9 @@ import com.cygnus.trm.util.*;
 
 import org.apache.commons.logging.LogFactory;
 
-class CygnusTransactionmanagerGrailsPlugin {
+class CygnusTransactionmanagerGrailsPlugin{
+	
+	def grailsApplication = ApplicationHolder.application
 	
 	// the plugin version
 	def version = "0.1"
@@ -66,8 +70,8 @@ Cygnus Transaction Manager Plugin.
 		}
 	
 		
-		def transInit = new TransactionManagerInit()
-		transInit.doWithDynamicMethodInit(ctx)
+		def transactionManagerInit = new TransactionManagerInit()
+		transactionManagerInit.doWithDynamicMethodInit(ctx)
 		
 
 
@@ -76,7 +80,7 @@ Cygnus Transaction Manager Plugin.
 	def doWithApplicationContext = { applicationContext ->
 		// TODO Implement post initialization spring config (optional)
 		//Atomikos configuration
-		def grailsApplication = ApplicationHolder.application
+		
 
 		grailsApplication.config.grails.plugin.atomikos.uts = [
 					'com.atomikos.icatch.console_file_name': 'tm.out',

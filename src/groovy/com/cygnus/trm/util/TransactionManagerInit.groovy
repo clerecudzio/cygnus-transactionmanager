@@ -13,7 +13,10 @@ import org.springframework.context.ApplicationContext
 class TransactionManagerInit {
 	def grailsApplication = ApplicationHolder.application
 	def aService = new AuditService()
-	
+
+
+
+
 	/**
 	 * Intercept invokeMethod to all application activities and insert to AuditTrail
 	 * @param ctx ApplicationContext
@@ -25,29 +28,38 @@ class TransactionManagerInit {
 	 * [propertyName : columnName : propertyType] = [propertyValue] , [propertyName : columnName :propertyType] = [propertyValue], ...
 	 */
 	def doWithDynamicMethodInit(ApplicationContext ctx) {
-	
-	
+
+
 
 		grailsApplication.domainClasses.each { gc ->
 			//iterating all domain classes
 			def sessionFactory = ctx.sessionFactory
 			def domainClass = gc.getClazz()
 			def inputMap = [:]
+
+			//			domainClass.metaClass.'static'.invokeMethod = { String name, args ->
+			//
+			//					delegate.log.info "executing static on $name"
+			//					def metaMethod = domainClass.metaClass.getStaticMetaMethod(name, args)
+			//
+			//					if(metaMethod) metaMethod.invoke(delegate, args)
+			//			}
+
 			//adding function on every method calls on domain classes
 			domainClass.metaClass.invokeMethod = {String name, args ->
 				//lock only save and update methods
 				def isExecutable = name in [
 					'save',
-					'update',
+					'update'
 				]
-				def isAuditTrail = name in ['save','update']
+				def isAuditTrail = name in ['save', 'update']
 				def hibernateMetaClass=sessionFactory.getClassMetadata(domainClass)
 				def tableName = hibernateMetaClass.getTableName()
-				
+
 				if(isExecutable){
 					//if methods are executable, get variables needed for print
 					def sb = new StringBuffer()
-					sb << "\n"
+					sb << "\n\n"
 
 					//obtain table name from domainClass's metaClass
 					sb << "execute [${delegate.class.name} : $name] -> [tableName: $tableName] [arguments: $args] \n"
@@ -56,10 +68,12 @@ class TransactionManagerInit {
 
 					//for each persistent method, obtain propertyName,columnName and value to insert
 					dgdc.persistentProperties.each{ property ->
-						def columnProps=hibernateMetaClass.getPropertyColumnNames(property.name)
-						sb <<  "["+property.name+" : "+columnProps[0]+" : "+property.type+" ]"  + " = ["+delegate[property.name]+ "]"
-						inputMap.put(property.name, delegate[property.name])
-						
+						if(delegate[property.name]){
+							def columnProps=hibernateMetaClass.getPropertyColumnNames(property.name)
+							sb <<  "["+property.name+" : "+columnProps[0]+" : "+property.type+" ]"  + " = "+delegate[property.name] 
+							sb << " ,"
+							inputMap.put(property.name, delegate[property.name])
+						}
 					}
 					delegate.log.info "--> $sb \n\n"
 
@@ -72,15 +86,15 @@ class TransactionManagerInit {
 
 				try {
 					//before invoking original method, check and insert auditTrail
-					if(name in ['save','update']){
-							delegate.log.info "inserting audit trail for ${tableName} \n"
-							aService.insertIntoAuditTrail(inputMap,tableName,delegate.class.name,'system-bootstrapping')
-						
+					if(name in ['save', 'update']){
+						delegate.log.info "inserting audit trail for ${tableName} \n"
+						aService.insertIntoAuditTrail(inputMap,tableName,delegate.class.name,'system-bootstrapping')
+
 					}
-					
+
 					def result = metaMethod.invoke(delegate, args)
-//					delegate.log.info "xxx ${delegate.class.name}.$name() result: $result"
-					
+					//					delegate.log.info "xxx ${delegate.class.name}.$name() result: $result"
+
 					return result
 				} catch (ex) {
 					delegate.log.error "-- Exception occurred in $name: $ex.message"
@@ -88,7 +102,7 @@ class TransactionManagerInit {
 				}
 			}
 
-		
+
 		}
 	}
 
