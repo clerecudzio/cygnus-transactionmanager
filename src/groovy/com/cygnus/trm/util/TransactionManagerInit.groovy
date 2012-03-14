@@ -62,7 +62,7 @@ class TransactionManagerInit {
 					sb << "\n\n"
 
 					//obtain table name from domainClass's metaClass
-					sb << "execute [${delegate.class.name} : $name] -> [tableName: $tableName] [arguments: $args] \n"
+					sb << "execute [${delegate.class.name} : $name] -> [tableName: $tableName ($args)] \n"
 
 					def dgdc = new DefaultGrailsDomainClass(delegate.class)
 
