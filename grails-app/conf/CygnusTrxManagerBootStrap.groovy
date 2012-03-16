@@ -9,6 +9,7 @@ class CygnusTrxManagerBootStrap {
 
 		environments{
 			development{
+				ExpandoMetaClass.enableGlobally()
 				//insert all tables into domainConfig for identification
 				def notAudited = [
 					'com.cygnus.sys.trm.STAuditTrail',

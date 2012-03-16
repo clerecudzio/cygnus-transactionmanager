@@ -72,6 +72,7 @@ Cygnus Transaction Manager Plugin.
 		
 		def transactionManagerInit = new TransactionManagerInit()
 		transactionManagerInit.doWithDynamicMethodInit(ctx)
+	
 		
 
 

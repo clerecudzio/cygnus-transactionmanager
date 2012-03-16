@@ -2,6 +2,7 @@ package com.cygnus.trm.util
 import com.cygnus.sys.trm.AuditService
 
 import org.hibernate.SessionFactory
+import org.codehaus.groovy.grails.commons.DefaultGrailsControllerClass
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 import org.codehaus.groovy.grails.commons.ApplicationHolder
 import org.springframework.context.ApplicationContext
@@ -37,13 +38,13 @@ class TransactionManagerInit {
 			def domainClass = gc.getClazz()
 			def inputMap = [:]
 
-			//			domainClass.metaClass.'static'.invokeMethod = { String name, args ->
-			//
-			//					delegate.log.info "executing static on $name"
-			//					def metaMethod = domainClass.metaClass.getStaticMetaMethod(name, args)
-			//
-			//					if(metaMethod) metaMethod.invoke(delegate, args)
-			//			}
+						domainClass.class.metaClass.static.invokeMethod = { String name, args ->
+			
+								delegate.log.info "executing static on $name"
+								def metaMethod = domainClass.metaClass.getStaticMetaMethod(name, args)
+			
+								if(metaMethod) metaMethod.invoke(delegate,args)
+						}
 
 			//adding function on every method calls on domain classes
 			domainClass.metaClass.invokeMethod = {String name, args ->
@@ -59,10 +60,9 @@ class TransactionManagerInit {
 				if(isExecutable){
 					//if methods are executable, get variables needed for print
 					def sb = new StringBuffer()
-					sb << "\n\n"
-
+					
 					//obtain table name from domainClass's metaClass
-					sb << "execute [${delegate.class.name} : $name] -> [tableName: $tableName ($args)] \n"
+					sb << "[${delegate.class.name} : $name] -> [tableName: $tableName ($args)] \n"
 
 					def dgdc = new DefaultGrailsDomainClass(delegate.class)
 
@@ -70,17 +70,17 @@ class TransactionManagerInit {
 					dgdc.persistentProperties.each{ property ->
 						if(delegate[property.name]){
 							def columnProps=hibernateMetaClass.getPropertyColumnNames(property.name)
-							sb <<  "["+property.name+" : "+columnProps[0]+" : "+property.type+" ]"  + " = "+delegate[property.name] 
+							sb <<  " ["+property.name+" : "+columnProps[0]+" : "+property.type+" ]"  + " = "+delegate[property.name]
 							sb << " ,"
 							inputMap.put(property.name, delegate[property.name])
 						}
 					}
-					delegate.log.info "--> $sb \n\n"
+					delegate.log.info "$sb \n\n"
 
 				}
 				def metaMethod = delegate.class.metaClass.getMetaMethod(name, args)
 				if (!metaMethod) {
-					delegate.log.warn "-- Method not found: $name($args)"
+					delegate.log.warn "Method not found: $name($args)"
 					return
 				}
 
