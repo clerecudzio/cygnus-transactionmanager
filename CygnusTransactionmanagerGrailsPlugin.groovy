@@ -2,7 +2,7 @@ import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
 import org.codehaus.groovy.grails.commons.ApplicationHolder
 import org.hibernate.SessionFactory
-import com.cygnus.util.GroovyHelper;
+
 import com.cygnus.trm.util.*;
 
 import org.apache.commons.logging.LogFactory;
