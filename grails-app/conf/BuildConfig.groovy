@@ -44,6 +44,4 @@ grails.project.dependency.resolution = {
         build ":tomcat:$grailsVersion"
     }
 	
-	grails.plugin.location.'cygnus-utilities' = "../cygnus-utilities"
-	
 }
