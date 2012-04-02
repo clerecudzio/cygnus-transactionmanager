@@ -38,13 +38,13 @@ class TransactionManagerInit {
 			def domainClass = gc.getClazz()
 			def inputMap = [:]
 
-						domainClass.class.metaClass.static.invokeMethod = { String name, args ->
-			
-								delegate.log.info "executing static on $name"
-								def metaMethod = domainClass.metaClass.getStaticMetaMethod(name, args)
-			
-								if(metaMethod) metaMethod.invoke(delegate,args)
-						}
+			domainClass.class.metaClass.static.invokeMethod = { String name, args ->
+
+				delegate.log.info "executing static on $name"
+				def metaMethod = domainClass.metaClass.getStaticMetaMethod(name, args)
+
+				if(metaMethod) metaMethod.invoke(delegate,args)
+			}
 
 			//adding function on every method calls on domain classes
 			domainClass.metaClass.invokeMethod = {String name, args ->
@@ -60,7 +60,7 @@ class TransactionManagerInit {
 				if(isExecutable){
 					//if methods are executable, get variables needed for print
 					def sb = new StringBuffer()
-					
+
 					//obtain table name from domainClass's metaClass
 					sb << "[${delegate.class.name} : $name] -> [tableName: $tableName ($args)] \n"
 
