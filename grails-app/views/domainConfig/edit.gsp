@@ -2,7 +2,7 @@
 <!doctype html>
 <html>
 	<head>
-		<meta name="layout" content="main">
+		<meta name="layout" content="cygnus-forms">
 		<g:set var="entityName" value="${message(code: 'domainConfig.label', default: 'DomainConfig')}" />
 		<title><g:message code="default.edit.label" args="[entityName]" /></title>
 	</head>
