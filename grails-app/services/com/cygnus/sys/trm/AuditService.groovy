@@ -23,11 +23,12 @@ class AuditService {
 		}catch(Exception ex){
 			log.error "error when run checkAuditLoggingEnabled ${ex.getMessage()}"
 		}
-		return domainConfig? domainConfig.auditEnabled : false
+		return domainConfig? true : false
 	}
 
 	def insertIntoAuditTrail(Map inputMap,domainClassName,fullClassName,processInfo){
 		try{
+			def sb = new StringBuffer();
 			//if domain class logging is enabled
 			if(checkAuditLoggingEnabled(fullClassName)){
 				STAuditTrail.withTransaction{
@@ -35,11 +36,12 @@ class AuditService {
 
 					inputMap.each{ value ->
 
-						log.info "value = " + value.key +" , "+ value.value
+						sb << "value = " + value.key +" , "+ value.value
 
 						stAuditTrail.addToTdAuditTrail(new STdAuditTrail(columnName: "${value.key}",columnValue: "${value.value}"))
 
 					}
+					log.info "Logging $domainClassName \n contents: $sb"
 					stAuditTrail.save(failOnError:true)
 				}
 			}

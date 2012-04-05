@@ -11,16 +11,11 @@ class CygnusTrxManagerBootStrap {
 			development{
 				ExpandoMetaClass.enableGlobally()
 				//insert all tables into domainConfig for identification
-				def notAudited = [
-					'com.cygnus.sys.trm.STAuditTrail',
-					'com.cygnus.sys.trm.STdAuditTrail'
-				]
+				
 
 				grailsApplication.domainClasses.each{ gc ->
 					def domainClass = gc.getClazz()
-					if(gc.clazz.name in notAudited) new DomainConfig(domainClassName: gc.clazz.name, auditEnabled:false).save(failOnError:true)
-
-					else	new DomainConfig(domainClassName: gc.clazz.name).save(failOnError:true)
+					new DomainConfig(domainClassName: gc.clazz.name).save(failOnError:true)
 				}
 
 

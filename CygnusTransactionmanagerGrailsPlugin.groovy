@@ -1,17 +1,9 @@
-import org.codehaus.groovy.grails.commons.GrailsApplication;
-import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
-import org.codehaus.groovy.grails.commons.ApplicationHolder
-import org.hibernate.SessionFactory
-
-
-import com.cygnus.trm.util.*;
-
-import org.apache.commons.logging.LogFactory;
+import com.cygnus.trm.util.lst.AuditLogListener
+import com.cygnus.trm.util.lst.AuditLogListenerUtil
+import org.codehaus.groovy.grails.orm.hibernate.HibernateEventListeners
 
 class CygnusTransactionmanagerGrailsPlugin{
-	
-	def grailsApplication = ApplicationHolder.application
-	
+
 	// the plugin version
 	def version = "0.1"
 	// the version or versions of Grails the plugin is designed for
@@ -22,7 +14,7 @@ class CygnusTransactionmanagerGrailsPlugin{
 	def pluginExcludes = [
 		"grails-app/views/error.gsp"
 	]
-	
+
 	// TODO Fill in these fields
 	def title = "Cygnus Transaction Manager Plugin" // Headline display name of the plugin
 	def author = "Haris Ibrahim"
@@ -30,7 +22,7 @@ class CygnusTransactionmanagerGrailsPlugin{
 	def description = '''\
 Cygnus Transaction Manager Plugin.
 '''
-	def loadBefore = ['cygnusUsermanagement']
+	def loadAfter = ['core', 'hibernate']
 	// URL to the plugin's documentation
 	def documentation = "http://grails.org/plugin/cygnus-transactionmanager"
 
@@ -57,33 +49,46 @@ Cygnus Transaction Manager Plugin.
 
 	def doWithSpring = {
 		// TODO Implement runtime spring config (optional)
-	
-
+		
+		
 	}
 
 	def doWithDynamicMethods = { ctx ->
 		// TODO Implement registering dynamic methods to classes (optional)
-		for (classes in application.allClasses){
-			classes.metaClass.'static'.getLog = { ->
-				LogFactory.getLog(classes)
-				}
-		}
 	
-		
-		def transactionManagerInit = new TransactionManagerInit()
-		transactionManagerInit.doWithDynamicMethodInit(ctx)
-	
-		
-
-
 	}
-
+	/**
+	 * Credit to :
+	 * http://stackoverflow.com/questions/1956115/hooking-into-grails-domain-object-save
+	 * @param listeners
+	 * @param listener
+	 * @param type
+	 * @return
+	 */
+	private addEventTypeListener(listeners, listener, type) {
+		def typeProperty = "${type}EventListeners"
+		def typeListeners = listeners."${typeProperty}"
+		def expandedTypeListeners = new Object[typeListeners.length + 1]
+		System.arraycopy(typeListeners, 0, expandedTypeListeners, 0, typeListeners.length)
+		expandedTypeListeners[-1] = listener
+		listeners."${typeProperty}" = expandedTypeListeners
+	}
+	
 	def doWithApplicationContext = { applicationContext ->
 		// TODO Implement post initialization spring config (optional)
+		def listeners = applicationContext.sessionFactory.eventListeners
+		def listener = new AuditLogListener()
+		listener.sessionFactory = applicationContext.getBean('sessionFactory')
+		[
+			'postInsert',
+			'postUpdate',
+			'postDelete'
+		].each({
+			addEventTypeListener(listeners, listener, it)
+		})
 		//Atomikos configuration
-		
 
-		grailsApplication.config.grails.plugin.atomikos.uts = [
+		application.config.grails.plugin.atomikos.uts = [
 					'com.atomikos.icatch.console_file_name': 'tm.out',
 					'com.atomikos.icatch.log_base_name': 'tmlog',
 					'com.atomikos.icatch.tm_unique_name': 'myTransactionManager',
