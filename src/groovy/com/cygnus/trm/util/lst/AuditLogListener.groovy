@@ -19,15 +19,17 @@ import com.cygnus.sys.trm.STdAuditTrail
 import grails.util.Environment
 
 
-class AuditLogListener extends AuditLog implements PostDeleteEventListener,PreDeleteEventListener, PostInsertEventListener, PostUpdateEventListener, Initializable {
+class AuditLogListener extends AuditLog implements PostDeleteEventListener, PostInsertEventListener, PostUpdateEventListener, Initializable {
 
-
+ 
 	def auditService = new AuditService()
 
 
-	private def parseEventModel(eventModel) throws Exception {
+	private def parseEventModel(eventModel,process) throws Exception {
 		String[] names = eventModel.getPersister().getPropertyNames()
-		Object[] state = eventModel.getState()
+		def Object[] state
+		if(process.equals('DELETE')) state = eventModel.getDeletedState()
+			else state = eventModel.getState()
 		def map = makeMap(names, state)
 		def returnMap = [:]
 		def entity = eventModel.getEntity()
@@ -48,8 +50,8 @@ class AuditLogListener extends AuditLog implements PostDeleteEventListener,PreDe
 		return map
 	}
 
-	private def insertAuditTrail(inputMap,domainClassName) throws Exception{
-		def stAuditTrail = new STAuditTrail(domainClassName: domainClassName,accessDtm: new Date(),modifiedBy: "cygnus-system",process:this.getActor())
+	private def insertAuditTrail(inputMap,domainClassName,process) throws Exception{
+		def stAuditTrail = new STAuditTrail(domainClassName: domainClassName,accessDtm: new Date(),modifiedBy: "cygnus-system",process:process)
 		def sb = new StringBuffer()
 		inputMap.each{ value ->
 			//null props wont be saved
@@ -64,9 +66,9 @@ class AuditLogListener extends AuditLog implements PostDeleteEventListener,PreDe
 		saveAuditLog(stAuditTrail)
 	}
 
-	private def generateLogging(event) throws Exception{
+	private def generateLogging(event,process) throws Exception{
 		def sb = new StringBuffer();
-		def parseResult = parseEventModel(event)
+		def parseResult = parseEventModel(event,process)
 		def isAuditable = false
 		sb << parseResult.name +"="
 		sb << " "+parseResult.propertyArray.toString()
@@ -88,13 +90,13 @@ class AuditLogListener extends AuditLog implements PostDeleteEventListener,PreDe
 
 	public void onPostInsert(final PostInsertEvent event) {
 		try{
-			def returnMap = generateLogging(event)
+			def returnMap = generateLogging(event,'INSERT')
 			log.info "inserted object : [${returnMap.logArray}]"
 			if(returnMap.isExecuteLogging){
-				insertAuditTrail(returnMap.resultArray.propertyArray,returnMap.resultArray.name)
+				insertAuditTrail(returnMap.resultArray.propertyArray,returnMap.resultArray.name,'INSERT')
 			}
 		}catch(Exception e){
-			log.error "error on execute post insert ${e.getMessage()}"
+			log.error "error on execute post insert ${e.message}"
 			e.printStackTrace();
 		}
 		// logic after insert
@@ -103,14 +105,14 @@ class AuditLogListener extends AuditLog implements PostDeleteEventListener,PreDe
 
 	public void onPostUpdate(final PostUpdateEvent event) {
 		try{
-			def returnMap = generateLogging(event)
+			def returnMap = generateLogging(event,'UPDATE')
 			log.info "update object  : [${returnMap.logArray}]"
 			if(returnMap.isExecuteLogging){
-				insertAuditTrail(returnMap.resultArray.propertyArray,returnMap.resultArray.name)
+				insertAuditTrail(returnMap.resultArray.propertyArray,returnMap.resultArray.name,'UPDATE')
 
 			}
 		}catch(Exception e){
-			log.error "error on execute post update ${e.getMessage()}"
+			log.error "error on execute post update ${e.message}"
 			e.printStackTrace();
 		}
 
@@ -120,14 +122,14 @@ class AuditLogListener extends AuditLog implements PostDeleteEventListener,PreDe
 
 	public void onPostDelete(final PostDeleteEvent event) {
 		try{
-			def returnMap = generateLogging(event)
+			def returnMap = generateLogging(event,'DELETE')
 			log.info "delete object  : [${returnMap.logArray}]"
 			if(returnMap.isExecuteLogging){
-				insertAuditTrail(returnMap.resultArray.propertyArray,returnMap.resultArray.name)
+				insertAuditTrail(returnMap.resultArray.propertyArray,returnMap.resultArray.name,'DELETE')
 
 			}
 		}catch(Exception e){
-			log.error "error on execute post update ${e.getMessage()}"
+			log.error "error on execute post delete ${e.message}"
 			e.printStackTrace();
 		}
 
@@ -147,10 +149,7 @@ class AuditLogListener extends AuditLog implements PostDeleteEventListener,PreDe
 		return
 	}
 
-	@Override
-	public boolean onPreDelete(PreDeleteEvent arg0) {
-		log.info "executing pre Delete "+ arg0.toString();
-		// TODO Auto-generated method stub
-		return false;
-	}
+	
+
+	
 }
