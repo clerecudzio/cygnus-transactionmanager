@@ -1,5 +1,4 @@
 import com.cygnus.trm.util.lst.AuditLogListener
-import com.cygnus.trm.util.lst.AuditLogListenerUtil
 import org.codehaus.groovy.grails.orm.hibernate.HibernateEventListeners
 
 class CygnusTransactionmanagerGrailsPlugin{

@@ -67,7 +67,7 @@ class AuditLogListener extends AuditLog implements PostDeleteEventListener,PreDe
 	private def generateLogging(event) throws Exception{
 		def sb = new StringBuffer();
 		def parseResult = parseEventModel(event)
-		def isAuditable
+		def isAuditable = false
 		sb << parseResult.name +"="
 		sb << " "+parseResult.propertyArray.toString()
 		if (!(parseResult.name in [
@@ -119,8 +119,19 @@ class AuditLogListener extends AuditLog implements PostDeleteEventListener,PreDe
 	}
 
 	public void onPostDelete(final PostDeleteEvent event) {
-		log.info "executing post Delete "
-		// logic after delete
+		try{
+			def returnMap = generateLogging(event)
+			log.info "delete object  : [${returnMap.logArray}]"
+			if(returnMap.isExecuteLogging){
+				insertAuditTrail(returnMap.resultArray.propertyArray,returnMap.resultArray.name)
+
+			}
+		}catch(Exception e){
+			log.error "error on execute post update ${e.getMessage()}"
+			e.printStackTrace();
+		}
+
+		// logic after update
 		return
 	}
 
