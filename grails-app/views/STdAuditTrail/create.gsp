@@ -2,7 +2,7 @@
 <!doctype html>
 <html>
 	<head>
-		<meta name="layout" content="main">
+		<meta name="layout" content="cygnus-forms">
 		<g:set var="entityName" value="${message(code: 'STdAuditTrail.label', default: 'STdAuditTrail')}" />
 		<title><g:message code="default.create.label" args="[entityName]" /></title>
 	</head>

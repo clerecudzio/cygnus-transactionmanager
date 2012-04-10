@@ -6,6 +6,7 @@
 		<meta name="layout" content="cygnus-forms">
 		<g:set var="entityName" value="\${message(code: '${domainClass.propertyName}.label', default: '${className}')}" />
 		<title><g:message code="default.edit.label" args="[entityName]" /></title>
+		<parameter name="pageEName" value="${domainClass.propertyName}" />
 	</head>
 	<body>
 		<a href="#edit-${domainClass.propertyName}" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
