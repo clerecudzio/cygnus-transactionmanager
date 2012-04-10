@@ -6,6 +6,7 @@
 		<meta name="layout" content="cygnus-forms">
 		<g:set var="entityName" value="${message(code: 'STAuditTrail.label', default: 'STAuditTrail')}" />
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
+		<parameter name="pageEName" value="domainConfig" />
 	</head>
 	<body>
 		<a href="#list-STAuditTrail" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>

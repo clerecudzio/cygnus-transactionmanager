@@ -8,6 +8,7 @@
 <g:set var="entityName"
 	value="${message(code: 'domainConfig.label', default: 'DomainConfig')}" />
 <title><g:message code="default.list.label" args="[entityName]" /></title>
+<parameter name="pageEName" value="domainConfig" />
 </head>
 <body>
 	<g:formRemote name="showSearchForm" onFailure="handleError(XMLHttpRequest,textStatus,errorThrown);" update="pageContent" 

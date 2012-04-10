@@ -6,6 +6,7 @@
 		<meta name="layout" content="cygnus-forms">
 		<g:set var="entityName" value="${message(code: 'domainConfig.label', default: 'DomainConfig')}" />
 		<title><g:message code="default.create.label" args="[entityName]" /></title>
+		<parameter name="pageEName" value="domainConfig" />
 	</head>
 	<body>
 		<a href="#create-domainConfig" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
